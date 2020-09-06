@@ -1,6 +1,9 @@
 package duke.storage;
 
-import duke.exception.*;
+import duke.exception.DukeException;
+import duke.exception.DukeFileNotFoundException;
+import duke.exception.EmptyDateException;
+import duke.exception.EmptyDescriptionException;
 import duke.task.*;
 
 import java.io.File;
@@ -33,7 +36,6 @@ public class Storage {
      * @throws DukeException if there are issues finding the file or decoding the file
      */
     public ArrayList<Task> load() throws DukeException {
-        createDirectoryIfNotExist();
         createFileIfNotExist();
         return decodeTxtFile();
     }
@@ -42,37 +44,35 @@ public class Storage {
      * encodes the tasks in the given task list to a more appropriate format for storage
      * updates the changes in the task list using the encoded versions of the task
      *
-     * @param tasks the task list to reference when updating the file
+     * @param taskList the task list to reference when updating the file
      */
-    public void save(ArrayList<Task> tasks) throws DukeFileLoadingErrorException {
+    public void save(TaskList taskList) {
         try {
             FileWriter fw = new FileWriter(this.filePath);
 
-            for (Task task : tasks) {
+            for (Task task : taskList.getTaskList()) {
                 String encodedTask = task.encode();
                 fw.write(encodedTask + System.lineSeparator());
             }
 
             fw.close();
         } catch (IOException e) {
-            throw new DukeFileLoadingErrorException("there was an error loading the file");
+            e.printStackTrace();
         }
     }
 
-    private void createDirectoryIfNotExist() {
+    private void createFileIfNotExist() {
         File dir = new File("data");
         if (!dir.exists()) {
             dir.mkdir();
         }
-    }
 
-    private void createFileIfNotExist() throws DukeFileLoadingErrorException {
-        File file = new File(this.filePath);
-        if (!file.exists()) {
+        File duke = new File(this.filePath);
+        if (!duke.exists()) {
             try {
-                file.createNewFile();
+                duke.createNewFile();
             } catch (IOException e) {
-                throw new DukeFileLoadingErrorException("there was an error loading the file");
+                e.printStackTrace();
             }
         }
 

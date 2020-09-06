@@ -1,11 +1,10 @@
 package duke;
 
 import duke.command.Command;
-import duke.command.CommandResult;
-import duke.command.InvalidCommand;
 import duke.exception.DukeException;
 import duke.storage.Storage;
 import duke.task.TaskList;
+import duke.ui.Ui;
 import duke.parsers.Parser;
 
 /**
@@ -22,6 +21,7 @@ public class Duke {
 
     private Storage storage;
     private TaskList tasks;
+    private Ui ui;
 
     static final String FILE_PATH = "data/tasks.txt";
 
@@ -30,11 +30,12 @@ public class Duke {
      * @param filePath a string representing the destination file path where the list of tasks is stored
      */
     public Duke(String filePath) {
+        ui = new Ui();
         storage = new Storage(filePath);
         try {
             tasks = new TaskList(storage.load());
         } catch (DukeException e) {
-            System.out.println(Output.loadingErrorMessage());
+            ui.showLoadingError();
             tasks = new TaskList();
         }
     }
@@ -42,14 +43,14 @@ public class Duke {
     /**
      * returns a string corresponding to the response based on the command given
      * @param command the command given by the user
-     * @return the appropriate response based on the given command
+     * @return the appropriate response to the given command
      */
-    public CommandResult getResponse(String command) throws DukeException {
-        Command c = Parser.parse(command);
+    public String getResponse(String command) {
         try {
-            return c.execute(tasks, storage);
+            Command c = Parser.parse(command);
+            return c.execute(tasks, ui, storage);
         } catch (DukeException e) {
-            return c.execute(tasks, storage);
+            return e.getMessage();
         }
     }
 }

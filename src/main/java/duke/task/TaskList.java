@@ -1,7 +1,5 @@
 package duke.task;
 
-import duke.exception.EmptyDateException;
-import duke.exception.EmptyDescriptionException;
 import duke.exception.InvalidIndexException;
 
 import java.util.ArrayList;
@@ -28,11 +26,12 @@ public class TaskList {
     }
 
     /**
-     * returns the number of tasks in the task list as an integer
-     * @return the number of tasks in the task list
+     * outputs a string representation of the number of tasks that the array list contains
+     * @return a string describing the number of tasks that the array list contains
      */
-    public int size() {
-        return this.tasks.size();
+    public String numberOfTasks() {
+        return "you have [" +
+                this.tasks.size() + "] task(s) in your list";
     }
 
     /**
@@ -60,51 +59,11 @@ public class TaskList {
     }
 
     /**
-     * adds a task to the task list based on the input given by the user
-     * @param input the input given by the user
-     * @return the task that was added to the task list
+     * adds the given task to the task list
+     * @param task the task to be added
      */
-    public Task add(String input) throws EmptyDescriptionException, EmptyDateException {
-        String[] split = input.split(" ");
-        Task toAdd = null;
-        switch(split[0]) {
-        case "todo":
-            toAdd = addToDo(input);
-            break;
-        case "deadline":
-            toAdd = addDeadline(input);
-            break;
-        case "event":
-            toAdd = addEvent(input);
-            break;
-        }
-        tasks.add(toAdd);
-        return toAdd;
-    }
-
-    public Task addToDo(String input) throws EmptyDescriptionException {
-        if (input.length() <= 5) {
-            throw new EmptyDescriptionException("oops! the description of a todo cannot be empty");
-        }
-        return new ToDo(input.substring(5));
-    }
-
-    public Task addDeadline(String input) throws EmptyDescriptionException, EmptyDateException {
-        if (input.length() <= 9) {
-            throw new EmptyDescriptionException("oops! the description of a deadline cannot be empty");
-        } else if (!input.contains("/")) {
-            throw new EmptyDateException("oops! the due date for the deadline was not specified");
-        }
-        return new Deadline(input.substring(9));
-    }
-
-    public Task addEvent(String input) throws EmptyDescriptionException, EmptyDateException {
-        if (input.length() <= 6) {
-            throw new EmptyDescriptionException("oops! the description of a event cannot be empty");
-        } else if (!input.contains("/")) {
-            throw new EmptyDateException("oops! the event date for the event was not specified");
-        }
-        return new Deadline(input.substring(6));
+    public void add(Task task) {
+        this.tasks.add(task);
     }
 
     /**
@@ -114,11 +73,13 @@ public class TaskList {
      */
     public ArrayList<Task> getMatchingTasks(String queryString) {
         ArrayList<Task> matchingTasks = new ArrayList<Task>();
+
         for (Task task : tasks) {
             if (task.toString().contains(queryString)) {
                 matchingTasks.add(task);
             }
         }
+
         return matchingTasks;
     }
 
@@ -126,7 +87,7 @@ public class TaskList {
      * returns the tasks stored in the task list in the form of an array list
      * @return the array list of tasks
      */
-    public ArrayList<Task> getTasks() {
+    public ArrayList<Task> getTaskList() {
         return this.tasks;
     }
 
